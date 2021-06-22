@@ -10,74 +10,37 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.yugabyte</groupId>
-	<artifactId>spring-data-yugabytedb-parent</artifactId>
+	<artifactId>spring-data-yugabytedb</artifactId>
 	<version>2.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Data Relational Parent</name>
-	<description>Parent module for Spring Data Relational repositories.</description>
-	<url>https://projects.spring.io/spring-data-jdbc</url>
+	<name>Spring Data Yugabyte</name>
+	<description>Spring Data support for YugabyteDB YSQL and YCQL.</description>
+	<url>https://projects.spring.io/spring-data-yugabytedb</url>
 
-	<parent>
-		<groupId>org.springframework.data.build</groupId>
-		<artifactId>spring-data-parent</artifactId>
-		<version>2.6.0-SNAPSHOT</version>
-	</parent>
-	
-	
 	<developers>
 		<developer>
+			<organization>Yugabyte, Inc.</organization>
+			<organizationUrl>https://yugabyte.com</organizationUrl>
 			<id>nchandrappa</id>
 			<name>Nikhil Chandrappa</name>
 			<email>nikhil(at)yugabyte.com</email>
-			<organization>Yugabyte, Inc.</organization>
-			<organizationUrl>https://yugabyte.com</organizationUrl>
 			<roles>
 				<role>Project Lead</role>
 			</roles>
 			<timezone>-5</timezone>
 		</developer>
 	</developers>
-	
-	<properties>
-		<springdata.commons>2.6.0-SNAPSHOT</springdata.commons>
-		<postgresql.version>42.2.19</postgresql.version>
-	</properties>
-	
+
 	<inceptionYear>2021</inceptionYear>
 
 	<modules>
+		<module>spring-data-yugabytedb-parent</module>
 		<module>spring-data-yugabytedb-ysql</module>
+		<module>spring-boot-yugabytedb-autoconfigure</module>
+		<module>yugabytedb-ysql-spring-boot-starter</module>
 	</modules>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-			<version>${springdata.commons}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-	</dependencies>
-	
 </project>
