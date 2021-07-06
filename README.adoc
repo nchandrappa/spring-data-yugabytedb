@@ -24,9 +24,9 @@ A quick start example of gettins started with Spring Data YugabyteDB in JAVA:
 ----
 public interface ShoppingCartRepository extends YsqlRepository<ShoppingCart, String> {
 
-	ShoppingCart findById(String id);
+  ShoppingCart findById(String id);
 
-	List<ShoppingCart> findByUserId(String userId);
+  List<ShoppingCart> findByUserId(String userId);
 
 }
 
@@ -45,14 +45,15 @@ public class CartService {
 
     ShoppingCart myShoppingCart = new ShoppingCart();
     myShoppingCart.set("cart1")
-	myShoppingCart.setUserId("u1001");
-	myShoppingCart.setProductId("asin1001");
-	myShoppingCart.setQuantity(1);
-	repository.save(myShoppingCart);
+    myShoppingCart.setUserId("u1001");
+    myShoppingCart.setProductId("asin1001");
+    myShoppingCart.setQuantity(1);
+    
+    repository.save(myShoppingCart);
 
     ShoppingCart savedCart = repository.findById("cart1");
     List<ShoppingCart> productsInCart = repository.findByUserId("u1001");
- }
+  }
 }
 
 @Configuration
@@ -62,25 +63,25 @@ public class YsqlConfig extends AbstractYugabyteJdbcConfiguration {
 	@Bean
 	DataSource dataSource() {
 		
-		String hostName = "127.0.0.1";
-		String port = "5433";
+	  String hostName = "127.0.0.1";
+	  String port = "5433";
 
-		Properties poolProperties = new Properties();
-		poolProperties.setProperty("dataSourceClassName", "com.yugabyte.ysql.YBClusterAwareDataSource");
-	    poolProperties.setProperty("dataSource.serverName", hostName);
-	    poolProperties.setProperty("dataSource.portNumber", port);
-	    poolProperties.setProperty("dataSource.user", "yugabyte");
-	    poolProperties.setProperty("dataSource.password", "");
-	    poolProperties.setProperty("dataSource.loadBalance", "true");
-	    poolProperties.setProperty("dataSource.additionalEndpoints",
+	  Properties poolProperties = new Properties();
+	  poolProperties.setProperty("dataSourceClassName", "com.yugabyte.ysql.YBClusterAwareDataSource");
+	  poolProperties.setProperty("dataSource.serverName", hostName);
+	  poolProperties.setProperty("dataSource.portNumber", port);
+	  poolProperties.setProperty("dataSource.user", "yugabyte");
+	  poolProperties.setProperty("dataSource.password", "");
+	  poolProperties.setProperty("dataSource.loadBalance", "true");
+	  poolProperties.setProperty("dataSource.additionalEndpoints",
 	        "127.0.0.2:5433,127.0.0.3:5433");
 
-	    HikariConfig hikariConfig = new HikariConfig(poolProperties);
-      	DataSource ybClusterAwareDataSource = new HikariDataSource(hikariConfig);
-      	return ybClusterAwareDataSource;
-	}
+	  HikariConfig hikariConfig = new HikariConfig(poolProperties);
+      	  DataSource ybClusterAwareDataSource = new HikariDataSource(hikariConfig);
+      	  return ybClusterAwareDataSource;
+    }
 
-	@Bean
+    @Bean
     TransactionManager transactionManager(DataSource dataSource) {                     
         return new YugabyteTransactionManager(dataSource);
     }
