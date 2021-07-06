@@ -29,6 +29,7 @@ import org.springframework.data.repository.core.support.PersistentEntityInformat
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -49,6 +50,7 @@ public class YsqlRepositoryFactory extends RepositoryFactorySupport {
 	private final YsqlDataAccessStrategy ysqlDataAccessStrategy;
 	private final NamedParameterJdbcOperations operations;
 	private final Dialect dialect;
+	private final JdbcTemplate jdbcTemplate;
 	@Nullable private BeanFactory beanFactory;
 
 	private QueryMappingConfiguration queryMappingConfiguration = QueryMappingConfiguration.EMPTY;
@@ -56,7 +58,7 @@ public class YsqlRepositoryFactory extends RepositoryFactorySupport {
 	
 	public YsqlRepositoryFactory(YsqlDataAccessStrategy dataAccessStrategy, RelationalMappingContext context,
 			JdbcConverter converter, Dialect dialect, ApplicationEventPublisher publisher,
-			NamedParameterJdbcOperations operations) {
+			NamedParameterJdbcOperations operations, JdbcTemplate jdbcTemplate) {
 
 		Assert.notNull(dataAccessStrategy, "DataAccessStrategy must not be null!");
 		Assert.notNull(context, "RelationalMappingContext must not be null!");
@@ -70,6 +72,7 @@ public class YsqlRepositoryFactory extends RepositoryFactorySupport {
 		this.dialect = dialect;
 		this.ysqlDataAccessStrategy = dataAccessStrategy;
 		this.operations = operations;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public void setQueryMappingConfiguration(QueryMappingConfiguration queryMappingConfiguration) {
@@ -127,6 +130,10 @@ public class YsqlRepositoryFactory extends RepositoryFactorySupport {
 	 */
 	public void setBeanFactory(@Nullable BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+	}
+	
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
 	}
 
 }

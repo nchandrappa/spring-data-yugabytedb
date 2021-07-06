@@ -27,6 +27,7 @@ import org.springframework.data.relational.core.mapping.RelationalMappingContext
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.util.Assert;
 
@@ -50,6 +51,7 @@ public class YsqlRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	private YsqlDataAccessStrategy ysqlDataAccessStrategy;
 	private QueryMappingConfiguration queryMappingConfiguration = QueryMappingConfiguration.EMPTY;
 	private NamedParameterJdbcOperations operations;
+	private JdbcTemplate jdbcTemplate;
 	private EntityCallbacks entityCallbacks;
 	private Dialect dialect;
 
@@ -61,7 +63,7 @@ public class YsqlRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
 		
 		YsqlRepositoryFactory yugabyteDbYsqlRepositoryFactory = new YsqlRepositoryFactory(ysqlDataAccessStrategy, mappingContext,
-				converter, dialect, publisher, operations);
+				converter, dialect, publisher, operations, jdbcTemplate);
 		yugabyteDbYsqlRepositoryFactory.setQueryMappingConfiguration(queryMappingConfiguration);
 		yugabyteDbYsqlRepositoryFactory.setEntityCallbacks(entityCallbacks);
 		yugabyteDbYsqlRepositoryFactory.setBeanFactory(beanFactory);
@@ -144,6 +146,13 @@ public class YsqlRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 
 			this.operations = beanFactory.getBean(NamedParameterJdbcOperations.class);
 		}
+		
+		if (this.jdbcTemplate == null) {
+
+			Assert.state(beanFactory != null, "If no JdbcTemplate are set a BeanFactory must be available.");
+
+			this.jdbcTemplate = beanFactory.getBean(JdbcTemplate.class);
+		}
 
 		if (this.ysqlDataAccessStrategy == null) {
 
@@ -157,7 +166,7 @@ public class YsqlRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 						SqlGeneratorSource sqlGeneratorSource = new SqlGeneratorSource(this.mappingContext, this.converter,
 								this.dialect);
 						return new DefaultYsqlDataAccessStrategy(sqlGeneratorSource, this.mappingContext, this.converter,
-								this.operations);
+								this.operations, this.jdbcTemplate);
 					});
 		}
 
