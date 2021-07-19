@@ -3,6 +3,8 @@ package com.yugabyte.data.jdbc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +49,13 @@ public class AbstractYugabyteConfigurationIntegrationTests {
 
 			JdbcOperations jdbcOperations = mock(JdbcOperations.class);
 			return new NamedParameterJdbcTemplate(jdbcOperations);
+		}
+		
+		@Bean
+		public DataSource dataSource() {
+
+			DataSource dataSource = mock(DataSource.class);
+			return dataSource;
 		}
 
 		@Override

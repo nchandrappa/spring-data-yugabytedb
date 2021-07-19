@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,9 +30,7 @@ import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.DialectResolver;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.yugabyte.data.jdbc.core.YsqlTemplate;
 import com.yugabyte.data.jdbc.core.convert.DefaultYsqlDataAccessStrategy;
@@ -49,28 +46,16 @@ import com.yugabyte.data.jdbc.core.convert.YsqlDataAccessStrategy;
 public class AbstractYugabyteJdbcConfiguration {
 
 	@Bean
-	JdbcTemplate jdbcTemplate(@Autowired DataSource dataSource) {
-
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		return jdbcTemplate;
-	}
-
-	@Bean
 	public YsqlTemplate ysqlTemplate(ApplicationContext applicationContext, JdbcMappingContext mappingContext,
 			JdbcConverter converter, YsqlDataAccessStrategy dataAccessStrategy) {
 		return new YsqlTemplate(applicationContext, mappingContext, converter, dataAccessStrategy);
 	}
 
 	@Bean
-	NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
-		return new NamedParameterJdbcTemplate(dataSource);
-	}
-
-	@Bean
 	public YsqlDataAccessStrategy ysqlDataAccessStrategyBean(NamedParameterJdbcOperations operations,
-			JdbcConverter jdbcConverter, JdbcMappingContext context, Dialect dialect, JdbcTemplate jdbcTemplate) {
+			JdbcConverter jdbcConverter, JdbcMappingContext context, Dialect dialect, DataSource dataSource) {
 		return new DefaultYsqlDataAccessStrategy(new SqlGeneratorSource(context, jdbcConverter, dialect), context,
-				jdbcConverter, operations, jdbcTemplate);
+				jdbcConverter, operations, dataSource);
 	}
 
 	@Bean

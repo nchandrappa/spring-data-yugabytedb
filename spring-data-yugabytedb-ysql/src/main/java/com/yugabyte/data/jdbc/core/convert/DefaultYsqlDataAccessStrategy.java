@@ -24,8 +24,9 @@ import org.springframework.data.jdbc.core.convert.JdbcConverter;
 import org.springframework.data.jdbc.core.convert.SqlGeneratorSource;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.sql.IdentifierProcessing;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 import com.yugabyte.data.jdbc.core.QueryOptions;
@@ -40,34 +41,30 @@ import com.yugabyte.data.jdbc.core.QueryOptions;
 public class DefaultYsqlDataAccessStrategy extends DefaultDataAccessStrategy implements YsqlDataAccessStrategy {
 
 	private static final String DEFERRABLE_TRANSACTION = "BEGIN ISOLATION LEVEL SERIALIZABLE, READ ONLY, DEFERRABLE";
-	private final JdbcTemplate jdbcTemplate;
+	private final DataSource dataSource;
 	private final RelationalMappingContext context;
 
 	public DefaultYsqlDataAccessStrategy(SqlGeneratorSource sqlGeneratorSource, RelationalMappingContext context,
-			JdbcConverter converter, NamedParameterJdbcOperations operations, JdbcTemplate jdbcTemplate) {
+			JdbcConverter converter, NamedParameterJdbcOperations operations, DataSource dataSource) {
 		super(sqlGeneratorSource, context, converter, operations);
 		this.context = context;
-		this.jdbcTemplate = jdbcTemplate;
+		this.dataSource = dataSource;
 	}
 
 	@Override
 	public long count(Class<?> domainType, QueryOptions queryOptions) throws SQLException {
 
 		String tableName = context.getRequiredPersistentEntity(domainType).getTableName()
-				.toSql(IdentifierProcessing.ANSI);
-		
-		
-		
+				.toSql(IdentifierProcessing.ANSI);			
 		String sqlString = String.format("SELECT COUNT(*) FROM %s", tableName);
 
-		Connection readConnection = null;
-		DataSource ybDataSource = jdbcTemplate.getDataSource();
+		Connection readConnection = DataSourceUtils.getConnection(dataSource);
 		if (queryOptions.isDeferrable() != null && queryOptions.isDeferrable()) {
-
-			readConnection = ybDataSource.getConnection();
-			readConnection.setAutoCommit(false);
-			Statement deferrableStatement = readConnection.createStatement();
-			deferrableStatement.executeUpdate(DEFERRABLE_TRANSACTION);
+			if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+				readConnection.setAutoCommit(false);
+				Statement deferrableStatement = readConnection.createStatement();
+				deferrableStatement.executeUpdate(DEFERRABLE_TRANSACTION);
+			}
 		}
 
 		Statement countStatement = readConnection.createStatement();
