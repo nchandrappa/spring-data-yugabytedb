@@ -51,10 +51,6 @@
 
 	<inceptionYear>2021</inceptionYear>
 
-<!-- 	<modules>
-		<module>spring-data-yugabytedb-ysql</module>
-	</modules> -->
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -85,7 +81,8 @@
 		<dependency>
 			<groupId>com.yugabyte</groupId>
 			<artifactId>testcontainer</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${yugabyte.testcontainer.version}</version>
+			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
